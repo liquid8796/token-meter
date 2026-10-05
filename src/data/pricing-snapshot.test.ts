@@ -49,4 +49,34 @@ describe("PRICING_SNAPSHOT", () => {
       }
     }
   });
+  it("stores only first-party verified batch dimensions", () => {
+    const current = new Map(
+      PRICING_SNAPSHOT.pricing
+        .filter((pricing) => pricing.effectiveFrom <= "2026-10-05T23:59:59.999Z")
+        .map((pricing) => [pricing.modelId, pricing]),
+    );
+
+    expect(current.get("model-gpt-6-astra")?.bands.map((band) => [band.batchInputPerUnit, band.batchOutputPerUnit])).toEqual([
+      ["5", "25"],
+      ["10", "37.5"],
+    ]);
+    expect(current.get("model-gpt-6-1-sol")?.bands.map((band) => [band.batchInputPerUnit, band.batchOutputPerUnit])).toEqual([
+      ["1", "5"],
+      ["2", "7.5"],
+    ]);
+    expect(current.get("model-gpt-6-luna")?.bands.map((band) => [band.batchInputPerUnit, band.batchOutputPerUnit])).toEqual([
+      ["0.05", "0.25"],
+      ["0.1", "0.375"],
+    ]);
+    expect(current.get("model-claude-fable-5-1")?.bands[0]).toMatchObject({ batchInputPerUnit: "5", batchOutputPerUnit: "25" });
+    expect(current.get("model-claude-opus-5-5")?.bands[0]).toMatchObject({ batchInputPerUnit: "2", batchOutputPerUnit: "10" });
+    expect(current.get("model-claude-sonnet-5-5")?.bands[0]).toMatchObject({ batchInputPerUnit: "1", batchOutputPerUnit: "5" });
+
+    for (const pricing of PRICING_SNAPSHOT.pricing.filter((item) => item.modelId.startsWith("model-gemini"))) {
+      for (const band of pricing.bands) {
+        expect(band.batchInputPerUnit).toBeUndefined();
+        expect(band.batchOutputPerUnit).toBeUndefined();
+      }
+    }
+  });
 });

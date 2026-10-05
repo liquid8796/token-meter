@@ -21,6 +21,8 @@ const models: CalculatorModel[] = [
         inputPerUnit: "1",
         outputPerUnit: "4",
         cachedInputPerUnit: "0.1",
+        batchInputPerUnit: "0.5",
+        batchOutputPerUnit: "2",
       },
     ],
   },
@@ -183,4 +185,19 @@ describe("Calculator", () => {
       presetSlug: "custom",
     }));
   });
+  it("renders savings insights from the last valid workload", async () => {
+    const user = userEvent.setup();
+    render(<Calculator models={models} initialSelectedSlugs={["fast"]} />);
+
+    const optimizer = screen.getByRole("region", { name: /fast model savings optimizer/i });
+    expect(within(optimizer).getByText(/save \$4\.50/i)).toBeInTheDocument();
+
+    const input = screen.getByLabelText(/monthly input tokens/i);
+    await user.clear(input);
+    await user.type(input, "not-a-number");
+
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    expect(within(optimizer).getByText(/save \$4\.50/i)).toBeInTheDocument();
+  });
+
 });

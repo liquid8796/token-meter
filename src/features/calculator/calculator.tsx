@@ -7,8 +7,9 @@ import { compareCosts } from "@/domain/pricing/compare-costs";
 import { formatTokenQuantity, formatUsd } from "@/domain/pricing/format";
 import { selectPricingBand } from "@/domain/pricing/pricing-band";
 import { parseTokenQuantity } from "@/domain/pricing/quantity";
-import type { CostBreakdown, ModelStatus, PricingBand } from "@/domain/pricing/types";
+import type { CostBreakdown, ModelStatus, PricingBand, Workload } from "@/domain/pricing/types";
 import type { CalculatorScenario } from "@/features/compare/comparison-state";
+import { OptimizerPanel } from "@/features/optimizer/optimizer-panel";
 import { WORKLOAD_PRESETS, getWorkloadPreset } from "@/features/presets/workload-presets";
 
 export interface CalculatorBand {
@@ -140,25 +141,33 @@ function evaluateCalculator(
     output.value === null ||
     (supportsCache && cached.value === null)
   ) {
-    return { results: null, error, supportsCache };
+    return { results: null, workload: null, error, supportsCache };
   }
+
+  const workload: Workload = {
+    inputTokens: input.value,
+    outputTokens: output.value,
+    cachedInputTokens: supportsCache ? (cached.value ?? 0n) : 0n,
+  };
 
   try {
     return {
       results: buildResults(
         models,
         selectedSlugs,
-        input.value,
-        output.value,
-        supportsCache ? (cached.value ?? 0n) : 0n,
+        workload.inputTokens,
+        workload.outputTokens,
+        workload.cachedInputTokens,
         context.value === null ? undefined : context.value,
       ),
+      workload,
       error: null,
       supportsCache,
     };
   } catch (caughtError) {
     return {
       results: null,
+      workload: null,
       error:
         caughtError instanceof Error
           ? caughtError.message
@@ -186,16 +195,16 @@ export function Calculator({
     cachedText: initialScenario?.cachedText ?? "0",
     contextText: initialScenario?.contextText ?? "",
   };
+  const initialEvaluation = evaluateCalculator(models, initialSelection, initialInputs);
   const [selectedSlugs, setSelectedSlugs] = useState(initialSelection);
   const [inputText, setInputText] = useState(initialInputs.inputText);
   const [outputText, setOutputText] = useState(initialInputs.outputText);
   const [cachedText, setCachedText] = useState(initialInputs.cachedText);
   const [contextText, setContextText] = useState(initialInputs.contextText);
   const [presetSlug, setPresetSlug] = useState(initialScenario?.presetSlug ?? "custom");
-  const [currentResults, setCurrentResults] = useState<ModelResult[]>(() =>
-    evaluateCalculator(models, initialSelection, initialInputs).results ?? [],
-  );
-  const [calculatorError, setCalculatorError] = useState<string | null>(null);
+  const [currentResults, setCurrentResults] = useState<ModelResult[]>(initialEvaluation.results ?? []);
+  const [currentWorkload, setCurrentWorkload] = useState<Workload | null>(initialEvaluation.workload);
+  const [calculatorError, setCalculatorError] = useState<string | null>(initialEvaluation.error);
 
   const selectedModels = useMemo(
     () => models.filter((model) => selectedSlugs.includes(model.slug)),
@@ -223,8 +232,9 @@ export function Calculator({
   ) {
     const evaluation = evaluateCalculator(models, nextSelectedSlugs, nextInputs);
     setCalculatorError(evaluation.error);
-    if (evaluation.results !== null) {
+    if (evaluation.results !== null && evaluation.workload !== null) {
       setCurrentResults(evaluation.results);
+      setCurrentWorkload(evaluation.workload);
       emitScenario(nextSelectedSlugs, nextInputs, nextPresetSlug);
     }
   }
@@ -449,6 +459,14 @@ export function Calculator({
                     </dd>
                   </div>
                 </dl>
+
+                {currentWorkload ? (
+                  <OptimizerPanel
+                    modelName={result.model.name}
+                    workload={currentWorkload}
+                    band={result.selectedBand}
+                  />
+                ) : null}
 
                 <div className="result-footnote">
                   <span>Verified {new Date(result.model.verifiedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
