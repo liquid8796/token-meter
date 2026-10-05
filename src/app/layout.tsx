@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-sync-scripts -- Adcash requires aclib.js before its inline AutoTag initializer. */
+/* eslint-disable @next/next/no-sync-scripts, @next/next/next-script-for-ga -- Keep the vendor-provided Adcash and Google tag snippets in <head>. */
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
@@ -26,6 +26,18 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="en">
       <head>
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-ZGNEZPD1Z8"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-ZGNEZPD1Z8');`,
+          }}
+        />
         <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js" />
         <script
           type="text/javascript"

@@ -26,4 +26,17 @@ describe("root SEO metadata", () => {
     expect(markup).toContain('zoneId: "8igkljjeqv"');
     expect(initializerIndex).toBeGreaterThan(libraryIndex);
   });
+
+  it("loads and configures the Google tag", () => {
+    const markup = renderToStaticMarkup(RootLayout({ children: <main>content</main> }));
+    const loaderIndex = markup.indexOf(
+      "https://www.googletagmanager.com/gtag/js?id=G-ZGNEZPD1Z8",
+    );
+    const configIndex = markup.indexOf("gtag('config', 'G-ZGNEZPD1Z8')");
+
+    expect(loaderIndex).toBeGreaterThanOrEqual(0);
+    expect(markup).toContain("window.dataLayer = window.dataLayer || []");
+    expect(markup).toContain("gtag('js', new Date())");
+    expect(configIndex).toBeGreaterThan(loaderIndex);
+  });
 });
