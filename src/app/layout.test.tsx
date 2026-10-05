@@ -23,7 +23,7 @@ describe("root SEO metadata", () => {
     const initializerIndex = markup.indexOf("aclib.runAutoTag");
 
     expect(libraryIndex).toBeGreaterThanOrEqual(0);
-    expect(markup).toContain('zoneId: "8igkljjeqv"');
+    expect(markup).toContain('zoneId: "hexzeadssg"');
     expect(initializerIndex).toBeGreaterThan(libraryIndex);
   });
 
