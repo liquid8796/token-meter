@@ -21,7 +21,7 @@ if (!(Test-Path $SshKey)) { throw "SSH key not found: $SshKey" }
 try {
   Push-Location $repo
   $pushed = $true
-  & tar -czf $archive --exclude=.git --exclude=node_modules --exclude=.next --exclude=.env --exclude=.env.local .
+  & tar -czf $archive --exclude=.git --exclude=.worktrees --exclude=node_modules --exclude=.next --exclude=.env --exclude=.env.local .
   if ($LASTEXITCODE -ne 0) { throw "Failed to package release" }
   Pop-Location
   $pushed = $false

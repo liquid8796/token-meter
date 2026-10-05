@@ -54,6 +54,7 @@ describe("native OCI deployment assets", () => {
     const deploy = read("ops/deploy.ps1");
 
     expect(deploy).toContain('"tokenmeter.site"');
+    expect(deploy).toContain("--exclude=.worktrees");
     expect(deploy).toContain('.Replace("`r`n", "`n").Replace("`r", "`n")');
     expect(deploy).toContain("[IO.File]::WriteAllText($releaseRunner");
     expect(deploy).toContain('scp -i $SshKey -o BatchMode=yes -o ConnectTimeout=10 $releaseRunner');
