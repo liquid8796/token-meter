@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { Calculator, type CalculatorModel } from "./calculator";
 
@@ -140,5 +140,47 @@ describe("Calculator", () => {
     expect(fifth).toBeDisabled();
     await user.click(fifth);
     expect(screen.getAllByTestId(/^result-/)).toHaveLength(4);
+  });
+  it("hydrates selection and workload from an initial scenario", () => {
+    render(
+      <Calculator
+        models={models}
+        initialScenario={{
+          modelSlugs: ["tiered", "fast"],
+          inputText: "3M",
+          outputText: "750K",
+          cachedText: "500K",
+          contextText: "300K",
+          presetSlug: "custom",
+        }}
+      />,
+    );
+
+    expect(screen.getByLabelText(/monthly input tokens/i)).toHaveValue("3M");
+    expect(screen.getByLabelText(/monthly output tokens/i)).toHaveValue("750K");
+    expect(screen.getByLabelText(/average input tokens per request/i)).toHaveValue("300K");
+    expect(screen.getByRole("checkbox", { name: /tiered model/i })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: /fast model/i })).toBeChecked();
+  });
+
+  it("applies a workload preset and manual edits switch it to custom", async () => {
+    const user = userEvent.setup();
+    const onScenarioChange = vi.fn();
+    render(<Calculator models={models} initialSelectedSlugs={["fast"]} onScenarioChange={onScenarioChange} />);
+
+    await user.selectOptions(screen.getByLabelText(/workload preset/i), "rag");
+    expect(screen.getByLabelText(/monthly input tokens/i)).toHaveValue("12M");
+    expect(screen.getByLabelText(/monthly output tokens/i)).toHaveValue("2M");
+    expect(screen.getByLabelText(/average input tokens per request/i)).toHaveValue("32K");
+    expect(onScenarioChange).toHaveBeenLastCalledWith(expect.objectContaining({ presetSlug: "rag" }));
+
+    const input = screen.getByLabelText(/monthly input tokens/i);
+    await user.clear(input);
+    await user.type(input, "13M");
+    expect(screen.getByLabelText(/workload preset/i)).toHaveValue("custom");
+    expect(onScenarioChange).toHaveBeenLastCalledWith(expect.objectContaining({
+      inputText: "13M",
+      presetSlug: "custom",
+    }));
   });
 });

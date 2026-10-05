@@ -8,6 +8,8 @@ import { formatTokenQuantity, formatUsd } from "@/domain/pricing/format";
 import { selectPricingBand } from "@/domain/pricing/pricing-band";
 import { parseTokenQuantity } from "@/domain/pricing/quantity";
 import type { CostBreakdown, ModelStatus, PricingBand } from "@/domain/pricing/types";
+import type { CalculatorScenario } from "@/features/compare/comparison-state";
+import { WORKLOAD_PRESETS, getWorkloadPreset } from "@/features/presets/workload-presets";
 
 export interface CalculatorBand {
   unitTokens: string;
@@ -43,6 +45,8 @@ interface ModelResult {
 interface CalculatorProps {
   models: CalculatorModel[];
   initialSelectedSlugs?: string[];
+  initialScenario?: CalculatorScenario;
+  onScenarioChange?: (scenario: CalculatorScenario) => void;
 }
 
 interface CalculatorInputState {
@@ -167,19 +171,27 @@ function evaluateCalculator(
 export function Calculator({
   models,
   initialSelectedSlugs = models.slice(0, 3).map((model) => model.slug),
+  initialScenario,
+  onScenarioChange,
 }: CalculatorProps) {
-  const initialSelection = initialSelectedSlugs.slice(0, 4);
+  const requestedSelection = initialScenario?.modelSlugs.length
+    ? initialScenario.modelSlugs
+    : initialSelectedSlugs;
+  const initialSelection = requestedSelection
+    .filter((slug) => models.some((model) => model.slug === slug))
+    .slice(0, 4);
   const initialInputs: CalculatorInputState = {
-    inputText: DEFAULT_INPUT,
-    outputText: DEFAULT_OUTPUT,
-    cachedText: "0",
-    contextText: "",
+    inputText: initialScenario?.inputText ?? DEFAULT_INPUT,
+    outputText: initialScenario?.outputText ?? DEFAULT_OUTPUT,
+    cachedText: initialScenario?.cachedText ?? "0",
+    contextText: initialScenario?.contextText ?? "",
   };
   const [selectedSlugs, setSelectedSlugs] = useState(initialSelection);
-  const [inputText, setInputText] = useState(DEFAULT_INPUT);
-  const [outputText, setOutputText] = useState(DEFAULT_OUTPUT);
-  const [cachedText, setCachedText] = useState("0");
-  const [contextText, setContextText] = useState("");
+  const [inputText, setInputText] = useState(initialInputs.inputText);
+  const [outputText, setOutputText] = useState(initialInputs.outputText);
+  const [cachedText, setCachedText] = useState(initialInputs.cachedText);
+  const [contextText, setContextText] = useState(initialInputs.contextText);
+  const [presetSlug, setPresetSlug] = useState(initialScenario?.presetSlug ?? "custom");
   const [currentResults, setCurrentResults] = useState<ModelResult[]>(() =>
     evaluateCalculator(models, initialSelection, initialInputs).results ?? [],
   );
@@ -190,12 +202,30 @@ export function Calculator({
     [models, selectedSlugs],
   );
   const supportsCache = selectedModels.some(modelSupportsCache);
+  const activePreset = getWorkloadPreset(presetSlug);
 
-  function recalculate(nextSelectedSlugs: string[], nextInputs: CalculatorInputState) {
+  function emitScenario(
+    nextSelectedSlugs: string[],
+    nextInputs: CalculatorInputState,
+    nextPresetSlug: string,
+  ) {
+    onScenarioChange?.({
+      modelSlugs: nextSelectedSlugs,
+      ...nextInputs,
+      presetSlug: nextPresetSlug,
+    });
+  }
+
+  function recalculate(
+    nextSelectedSlugs: string[],
+    nextInputs: CalculatorInputState,
+    nextPresetSlug: string,
+  ) {
     const evaluation = evaluateCalculator(models, nextSelectedSlugs, nextInputs);
     setCalculatorError(evaluation.error);
     if (evaluation.results !== null) {
       setCurrentResults(evaluation.results);
+      emitScenario(nextSelectedSlugs, nextInputs, nextPresetSlug);
     }
   }
 
@@ -207,6 +237,36 @@ export function Calculator({
       contextText,
       ...overrides,
     };
+  }
+
+  function updateManualInput(field: keyof CalculatorInputState, value: string) {
+    if (field === "inputText") setInputText(value);
+    if (field === "outputText") setOutputText(value);
+    if (field === "cachedText") setCachedText(value);
+    if (field === "contextText") setContextText(value);
+    setPresetSlug("custom");
+    recalculate(selectedSlugs, currentInputs({ [field]: value }), "custom");
+  }
+
+  function applyPreset(nextSlug: string) {
+    setPresetSlug(nextSlug);
+    const preset = getWorkloadPreset(nextSlug);
+    if (!preset) {
+      recalculate(selectedSlugs, currentInputs(), "custom");
+      return;
+    }
+
+    const nextInputs: CalculatorInputState = {
+      inputText: preset.inputText,
+      outputText: preset.outputText,
+      cachedText: preset.cachedText,
+      contextText: preset.contextText,
+    };
+    setInputText(nextInputs.inputText);
+    setOutputText(nextInputs.outputText);
+    setCachedText(nextInputs.cachedText);
+    setContextText(nextInputs.contextText);
+    recalculate(selectedSlugs, nextInputs, preset.slug);
   }
 
   const compared = compareCosts(
@@ -230,7 +290,7 @@ export function Calculator({
     if (nextSelectedSlugs === selectedSlugs) return;
 
     setSelectedSlugs(nextSelectedSlugs);
-    recalculate(nextSelectedSlugs, currentInputs());
+    recalculate(nextSelectedSlugs, currentInputs(), presetSlug);
   }
 
   return (
@@ -244,16 +304,23 @@ export function Calculator({
           <span className="selection-count">{selectedSlugs.length}/4 models</span>
         </div>
 
+        <label className="field preset-field">
+          <span>Workload preset</span>
+          <select value={presetSlug} onChange={(event) => applyPreset(event.target.value)}>
+            <option value="custom">Custom workload</option>
+            {WORKLOAD_PRESETS.map((preset) => (
+              <option value={preset.slug} key={preset.slug}>{preset.name}</option>
+            ))}
+          </select>
+          <small>{activePreset?.disclaimer ?? "Choose an example starting point or enter your measured workload directly."}</small>
+        </label>
+
         <div className="field-grid">
           <label className="field">
             <span>Monthly input tokens</span>
             <input
               value={inputText}
-              onChange={(event) => {
-                const value = event.target.value;
-                setInputText(value);
-                recalculate(selectedSlugs, currentInputs({ inputText: value }));
-              }}
+              onChange={(event) => updateManualInput("inputText", event.target.value)}
               inputMode="decimal"
               autoComplete="off"
             />
@@ -262,11 +329,7 @@ export function Calculator({
             <span>Monthly output tokens</span>
             <input
               value={outputText}
-              onChange={(event) => {
-                const value = event.target.value;
-                setOutputText(value);
-                recalculate(selectedSlugs, currentInputs({ outputText: value }));
-              }}
+              onChange={(event) => updateManualInput("outputText", event.target.value)}
               inputMode="decimal"
               autoComplete="off"
             />
@@ -276,11 +339,7 @@ export function Calculator({
               <span>Cached input tokens</span>
               <input
                 value={cachedText}
-                onChange={(event) => {
-                  const value = event.target.value;
-                  setCachedText(value);
-                  recalculate(selectedSlugs, currentInputs({ cachedText: value }));
-                }}
+                onChange={(event) => updateManualInput("cachedText", event.target.value)}
                 inputMode="decimal"
                 autoComplete="off"
               />
@@ -290,11 +349,7 @@ export function Calculator({
             <span>Average input tokens per request</span>
             <input
               value={contextText}
-              onChange={(event) => {
-                const value = event.target.value;
-                setContextText(value);
-                recalculate(selectedSlugs, currentInputs({ contextText: value }));
-              }}
+              onChange={(event) => updateManualInput("contextText", event.target.value)}
               inputMode="decimal"
               autoComplete="off"
               placeholder="Optional"

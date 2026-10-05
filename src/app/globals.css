@@ -1187,3 +1187,71 @@ input:focus-visible {
   .provider-model-row dl { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 16px; }
   .provider-model-actions { grid-column: auto; justify-content: flex-start; }
 }
+/* Growth Pack: shareable comparison scenarios */
+.field select {
+  width: 100%;
+  min-height: 49px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: rgba(4, 11, 13, 0.46);
+  color: var(--text);
+  padding: 0 13px;
+  font: inherit;
+  font-size: 0.9rem;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.field select:hover { border-color: var(--border-strong); }
+.field select:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-color: var(--signal);
+  background: var(--surface);
+}
+
+.preset-field {
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.compare-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.compare-toolbar > div { display: grid; gap: 3px; }
+.compare-toolbar strong {
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.compare-toolbar > div span,
+.copy-status {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+.compare-toolbar button {
+  min-height: 40px;
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text);
+  padding: 0 14px;
+  cursor: pointer;
+}
+.compare-toolbar button:hover { border-color: var(--signal); color: var(--signal); }
+.copy-status { min-width: 70px; }
+
+@media (max-width: 640px) {
+  .compare-toolbar {
+    grid-template-columns: 1fr auto;
+  }
+  .compare-toolbar > div { grid-column: 1 / -1; }
+  .copy-status { min-width: 0; }
+}
