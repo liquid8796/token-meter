@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+
+# test output
+coverage/
+playwright-report/
+test-results/
+
+# environment and secrets
+.env
+.env.*
+!.env.example
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# local QA / superpowers scratch
+.superpowers/
+*.log
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
