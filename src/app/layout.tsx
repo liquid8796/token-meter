@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-sync-scripts -- Adcash requires aclib.js before its inline AutoTag initializer. */
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
@@ -25,6 +26,15 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="en">
       <head>
+        <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js" />
+        <script
+          type="text/javascript"
+          dangerouslySetInnerHTML={{
+            __html: `aclib.runAutoTag({
+  zoneId: "8igkljjeqv",
+});`,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
