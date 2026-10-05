@@ -15,7 +15,7 @@ export function SiteHeader() {
         <Link href="/changes">Changes</Link>
       </nav>
       <Link className="header-source" href="/about">
-        Methodology <span aria-hidden="true">â†—</span>
+        Methodology <span aria-hidden="true">&#8599;</span>
       </Link>
     </header>
   );

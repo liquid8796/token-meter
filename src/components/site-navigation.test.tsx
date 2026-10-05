@@ -11,6 +11,7 @@ describe("site discovery navigation", () => {
     expect(screen.getByRole("link", { name: "Compare" })).toHaveAttribute("href", "/compare");
     expect(screen.getByRole("link", { name: "Budget" })).toHaveAttribute("href", "/budget");
     expect(screen.getByRole("link", { name: "Changes" })).toHaveAttribute("href", "/changes");
+    expect(screen.getByRole("link", { name: "Methodology" })).toHaveTextContent("Methodology \u2197");
   });
 
   it("keeps pricing changes discoverable from the footer", () => {
