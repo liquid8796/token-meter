@@ -5,6 +5,7 @@ export interface PricingRow {
   modelId: string;
   currency: string;
   effectiveFrom: Date;
+  effectiveFromBasis: string;
   effectiveTo: Date | null;
   sourceUrl: string;
   verifiedAt: Date;
@@ -59,6 +60,8 @@ export function hydrateModelPricing(
     modelId: pricingRow.modelId,
     currency: "USD",
     effectiveFrom: pricingRow.effectiveFrom.toISOString(),
+    effectiveFromBasis:
+      pricingRow.effectiveFromBasis === "official" ? "official" : "verified",
     effectiveTo: pricingRow.effectiveTo?.toISOString() ?? null,
     sourceUrl: pricingRow.sourceUrl,
     verifiedAt: pricingRow.verifiedAt.toISOString(),

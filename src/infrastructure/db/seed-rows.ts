@@ -13,6 +13,7 @@ export function buildSeedRows(snapshot: PricingSnapshot) {
       modelId: pricing.modelId,
       currency: pricing.currency,
       effectiveFrom: new Date(pricing.effectiveFrom),
+      effectiveFromBasis: pricing.effectiveFromBasis,
       effectiveTo: pricing.effectiveTo ? new Date(pricing.effectiveTo) : null,
       sourceUrl: pricing.sourceUrl,
       verifiedAt: new Date(pricing.verifiedAt),

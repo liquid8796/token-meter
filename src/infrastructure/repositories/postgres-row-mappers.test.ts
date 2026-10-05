@@ -11,6 +11,7 @@ describe("hydrateModelPricing", () => {
         currency: "USD",
         effectiveFrom: new Date("2026-10-05T00:00:00.000Z"),
         effectiveTo: null,
+        effectiveFromBasis: "official",
         sourceUrl: "https://developers.openai.com/api/docs/pricing",
         verifiedAt: new Date("2026-10-05T00:00:00.000Z"),
         notes: null,
@@ -47,6 +48,7 @@ describe("hydrateModelPricing", () => {
 
     expect(pricing.currency).toBe("USD");
     expect(pricing.effectiveFrom).toBe("2026-10-05T00:00:00.000Z");
+    expect(pricing.effectiveFromBasis).toBe("official");
     expect(pricing.bands[0].minInputTokensPerRequest).toBe(0n);
     expect(pricing.bands[0].maxInputTokensPerRequest).toBe(272_000n);
     expect(pricing.bands[1].minInputTokensPerRequest).toBe(272_001n);

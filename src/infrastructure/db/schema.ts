@@ -65,6 +65,7 @@ export const modelPricing = pgTable(
       .references(() => models.id, { onDelete: "cascade" }),
     currency: text("currency").notNull(),
     effectiveFrom: timestamp("effective_from", { withTimezone: true }).notNull(),
+    effectiveFromBasis: text("effective_from_basis").notNull().default("verified"),
     effectiveTo: timestamp("effective_to", { withTimezone: true }),
     sourceUrl: text("source_url").notNull(),
     verifiedAt: timestamp("verified_at", { withTimezone: true }).notNull(),

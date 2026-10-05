@@ -11,6 +11,8 @@ describe("buildSeedRows", () => {
     expect(rows.models).toHaveLength(8);
     expect(rows.pricing).toHaveLength(9);
     expect(rows.bands).toHaveLength(13);
+    expect(rows.pricing.find((pricing) => pricing.id === "price-gemini-3-8-flash-2027")?.effectiveFromBasis).toBe("official");
+    expect(rows.pricing.find((pricing) => pricing.id === "price-gpt-6-1-sol-2026-10-05")?.effectiveFromBasis).toBe("verified");
   });
 
   it("preserves bigint thresholds and decimal rates without floating point conversion", () => {

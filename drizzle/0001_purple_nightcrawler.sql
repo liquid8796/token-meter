@@ -1,0 +1,1 @@
+ALTER TABLE "model_pricing" ADD COLUMN "effective_from_basis" text DEFAULT 'verified' NOT NULL;

@@ -62,6 +62,7 @@ export interface ModelPricing {
   currency: "USD";
   bands: PricingBand[];
   effectiveFrom: string;
+  effectiveFromBasis: "verified" | "official";
   effectiveTo: string | null;
   sourceUrl: string;
   verifiedAt: string;

@@ -16,6 +16,9 @@ describe("PRICING_SNAPSHOT", () => {
       expect(source.protocol).toBe("https:");
       expect(OFFICIAL_SOURCE_HOSTS.has(source.hostname)).toBe(true);
       expect(pricing.verifiedAt).toMatch(/^2026-10-05T/);
+      expect(pricing.effectiveFromBasis).toBe(
+        pricing.id === "price-gemini-3-8-flash-2027" ? "official" : "verified",
+      );
     }
   });
 
