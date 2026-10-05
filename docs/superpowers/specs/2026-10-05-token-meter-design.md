@@ -37,21 +37,28 @@ Patterns: Repository, Adapter, dependency inversion, feature-oriented UI modules
 `id`, `providerId`, unique canonical `slug`, `name`, optional `family`, factual `description`, nullable `contextWindowTokens`, nullable `maxOutputTokens`, `modalities`, `status` (`active|legacy|preview|deprecated`), optional `releasedAt`, timestamps.
 
 ### ModelPricing
-`id`, `modelId`, `currency` (USD in V1), `unitTokens` (default 1,000,000), nullable `inputPerUnit`, `outputPerUnit`, `cachedInputPerUnit`, `cacheWritePerUnit`, `batchInputPerUnit`, `batchOutputPerUnit`, `effectiveFrom`, nullable `effectiveTo`, `sourceUrl`, `verifiedAt`, optional `notes`.
+`id`, `modelId`, `currency` (USD in V1), `processingTier` (`standard` in V1), `unitTokens` (default 1,000,000), nullable `minInputTokensPerRequest`, nullable `maxInputTokensPerRequest`, nullable `inputPerUnit`, `outputPerUnit`, `cachedInputPerUnit`, `cacheWritePerUnit`, `cacheWriteHourPerUnit`, `cacheStoragePerUnitHour`, `batchInputPerUnit`, `batchOutputPerUnit`, `effectiveFrom`, nullable `effectiveTo`, `sourceUrl`, `verifiedAt`, optional `notes`.
 
-Historic price records are retained rather than overwritten. Application/persistence prevents multiple open-ended current records for the same model/currency.
+Each row is a pricing **band** for a model/tier/effective interval. This is required because some providers change the rate for the entire request when input context crosses a threshold (for example long-context pricing). Historic and future-effective records are retained rather than overwritten. Persistence prevents overlapping active bands for the same model/tier/input range where practical.
 
 ## Calculation contract
 Use decimal-safe arithmetic for monetary values.
 
-`inputCost = inputTokens / unitTokens * inputPerUnit`  
-`outputCost = outputTokens / unitTokens * outputPerUnit`  
-`cachedInputCost = cachedInputTokens / unitTokens * cachedInputPerUnit`  
+`inputCost = uncachedInputTokens / unitTokens * inputPerUnit`
+
+`outputCost = outputTokens / unitTokens * outputPerUnit`
+
+`cachedInputCost = cachedInputTokens / unitTokens * cachedInputPerUnit`
+
 `total = sum(supported selected billable dimensions)`
 
 Rules:
 - parse human quantities such as `250K`, `3M`, `1.5B`;
 - reject negative/invalid values and enforce a safe upper bound;
+- workload quantities distinguish **uncached input** from **cached input** so cache tokens are not double-counted;
+- workload may include `averageInputTokensPerRequest`; when present, use it to choose the matching context-sensitive pricing band;
+- when average input per request is omitted for a model with context-sensitive bands, calculate with the base/short-context band and surface that assumption visibly rather than pretending aggregate monthly tokens determine the tier;
+- V1 calculator compares the `standard` processing tier only; batch/flex/fast prices may be stored for later but are never silently mixed into standard results;
 - unsupported dimensions are omitted, not displayed as zero-priced features;
 - retain internal precision and round only for presentation;
 - never infer discounts absent from the pricing record;

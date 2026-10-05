@@ -22,6 +22,7 @@
 
 ## Review Focus
 - Very large or malformed token quantities must fail safely without NaN/Infinity or browser lockup; covered in Task 2 domain tests.
+- Context-sensitive rates must select by average input tokens per request, never by monthly aggregate; omitted per-request context must produce an explicit base-band assumption; covered in Task 2 and Task 3 tests.
 - A pricing dimension absent for a model must stay unavailable rather than being silently treated as free; covered in Task 2 tests and Task 5 UI tests.
 - PostgreSQL outage must preserve trustworthy public read-only pricing through the bundled snapshot; covered in Task 4 integration tests.
 - Compare state with unknown/duplicate model slugs must normalize deterministically and never crash SSR; covered in Task 6 tests.
@@ -59,13 +60,16 @@
 
 **Interfaces:**
 - Produces `parseTokenQuantity(input: string): bigint`.
-- Produces `calculateModelCost(workload: Workload, pricing: Pricing): CostBreakdown`.
+- Produces `selectPricingBand(bands: PricingBand[], averageInputTokensPerRequest?: bigint): SelectedPricingBand`.
+- Produces `calculateModelCost(workload: Workload, pricing: PricingBand): CostBreakdown`.
 - Produces `compareCosts(results: CostBreakdown[]): ComparedCost[]`.
 - Uses string/Decimal representations for money; no infrastructure imports.
 
 - [ ] Write failing quantity tests for raw integers, K/M/B suffixes, decimals, whitespace, negatives, malformed strings, and configured upper bound.
 - [ ] Implement quantity parsing minimally; verify RED→GREEN.
-- [ ] Write failing cost tests for input/output, cached input, missing dimensions, zero workload, and precision-sensitive cases.
+- [ ] Write failing pricing-band tests for base tier, long-context threshold selection, boundary values, and omitted average-request context returning a visible base-band assumption.
+- [ ] Implement deterministic pricing-band selection; verify RED→GREEN.
+- [ ] Write failing cost tests for uncached input/output, cached input without double-counting, missing dimensions, zero workload, and precision-sensitive cases.
 - [ ] Implement decimal-safe calculation using `decimal.js`; verify full suite.
 - [ ] Write failing comparison tests for cheapest model, equal-cost tie, savings delta, and deterministic ordering.
 - [ ] Implement comparison and formatting helpers; run full suite/build.
@@ -80,11 +84,11 @@
 - Test: `src/infrastructure/repositories/snapshot-pricing-repository.test.ts`
 
 **Interfaces:**
-- Produces `PricingRepository` methods: `listProviders()`, `listModels(filter?)`, `getModelBySlug(slug)`, `getProviderBySlug(slug)`, `getCurrentPricing(modelId, asOf?)`.
+- Produces `PricingRepository` methods: `listProviders()`, `listModels(filter?)`, `getModelBySlug(slug)`, `getProviderBySlug(slug)`, `getCurrentPricingBands(modelId, asOf?, processingTier?)`.
 - Snapshot records match domain types and carry `sourceUrl` + `verifiedAt`.
 
 - [ ] Verify current official pricing/model details for the initial OpenAI, Anthropic, and Google set from first-party docs; record source URLs and verification date in data.
-- [ ] Write repository contract tests first for provider/model lookup, current pricing, status filtering, and absent record behavior.
+- [ ] Write repository contract tests first for provider/model lookup, current pricing bands, future/effective intervals, status filtering, and absent record behavior.
 - [ ] Implement the immutable snapshot repository; run tests.
 - [ ] Add a source-validation test that rejects shipped price records without official HTTPS source + verification date.
 - [ ] Run full suite/build.
@@ -110,7 +114,7 @@
 - Produces safe `GET /api/health` response `{ status, database }` without credentials/host details.
 
 - [ ] Write schema/repository tests first using an isolated test DB when `DATABASE_URL_TEST` exists and pure contract/fallback tests otherwise.
-- [ ] Define providers/models/model_pricing tables, constraints, indexes, and decimal columns.
+- [ ] Define providers/models/model_pricing-band tables, constraints, context-range/effective-date indexes, and decimal columns.
 - [ ] Implement migration and idempotent seed from snapshot.
 - [ ] Implement PostgreSQL repository to satisfy the same contract.
 - [ ] Write failing fallback tests for DB read error; implement resilient repository.
@@ -131,7 +135,7 @@
 - Consumes snapshot/public model pricing DTOs and Task 2 calculation functions.
 - Produces a client-local calculator with selected model(s), workload parsing, live breakdown, cheapest delta, and verification metadata.
 
-- [ ] Write UI tests first: changing input/output updates results; cache control only appears where supported; invalid input preserves last valid output; max selected models is enforced.
+- [ ] Write UI tests first: changing uncached input/output updates results; cached input is priced separately without double-counting; average input/request switches context bands; omitted per-request context shows a base-band assumption when relevant; cache control only appears where supported; invalid input preserves last valid output; max selected models is enforced.
 - [ ] Implement compact semantic design tokens and responsive shell matching the “precision metering console” contract.
 - [ ] Build workload controls, accessible model selector, live total, proportional component rail, breakdown, source/verified affordance, and reserved disabled ad slot.
 - [ ] Add restrained interaction motion with `prefers-reduced-motion` fallback using CSS/React primitives unless a dependency is genuinely needed.
