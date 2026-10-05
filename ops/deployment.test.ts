@@ -57,6 +57,12 @@ describe("native OCI deployment assets", () => {
     expect(deploy).toContain("$pushed = $true");
     expect(deploy).toContain("if ($pushed) { Pop-Location");
   });
+  it("installs migration tooling in production and fails fast when a release step fails", () => {
+    const release = read("ops/release.sh");
+
+    expect(release).toContain("npm ci --include=dev --no-audit --no-fund");
+    expect(release).toContain("bash -c \"set -euo pipefail;");
+  });
   it("does not introduce container deployment artifacts", () => {
     for (const path of ["Dockerfile", "docker-compose.yml", "docker-compose.yaml"]) {
       expect(existsSync(resolve(ROOT, path)), `${path} must stay absent`).toBe(false);

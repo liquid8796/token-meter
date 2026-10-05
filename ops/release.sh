@@ -84,7 +84,7 @@ mkdir -p "$release_dir"
 chown token-meter:token-meter "$release_dir"
 sudo -u token-meter tar xzf "$archive" -C "$release_dir"
 
-sudo -u token-meter bash -c "set -a; source '$ENV_FILE'; set +a; cd '$release_dir'; npm ci --no-audit --no-fund; npm run db:migrate; npm run db:seed; npm run build; npm prune --omit=dev --no-audit --no-fund"
+sudo -u token-meter bash -c "set -euo pipefail; set -a; source '$ENV_FILE'; set +a; cd '$release_dir'; npm ci --include=dev --no-audit --no-fund; npm run db:migrate; npm run db:seed; npm run build; npm prune --omit=dev --no-audit --no-fund"
 mkdir -p "$release_dir/.next/cache"
 chown -R token-meter:token-meter "$release_dir/.next"
 
