@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { loadProviderDetail } from "@/features/providers/load-provider-detail";
 import { ProviderDetailView } from "@/features/providers/provider-detail";
+import { createCanonicalMetadata } from "@/features/seo/metadata";
 import { createPricingRepository } from "@/infrastructure/repositories/create-pricing-repository";
 
 export const revalidate = 3600;
@@ -22,10 +23,11 @@ export async function generateMetadata({ params }: ProviderPageProps): Promise<M
   if (!detail) return { title: "Provider not found" };
 
   const pricedCount = detail.models.filter(({ pricing }) => pricing !== null).length;
-  return {
+  return createCanonicalMetadata({
     title: `${detail.provider.name} AI API pricing`,
     description: `${detail.provider.name} AI API pricing with ${pricedCount} priced models, official source links, and verification dates.`,
-  };
+    path: `/providers/${detail.provider.slug}`,
+  });
 }
 
 export default async function ProviderPage({ params }: ProviderPageProps) {

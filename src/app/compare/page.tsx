@@ -3,6 +3,7 @@
 import { ContentPage } from "@/components/content-page";
 import { loadCalculatorModels } from "@/features/calculator/load-calculator-models";
 import { CompareClient } from "@/features/compare/compare-client";
+import { createCanonicalMetadata } from "@/features/seo/metadata";
 import {
   comparisonSearchParamsFromRecord,
   parseComparisonSearchParams,
@@ -10,11 +11,11 @@ import {
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createCanonicalMetadata({
   title: "Compare AI model costs",
   description: "Compare source-backed AI API prices against the same monthly workload.",
-  alternates: { canonical: "/compare" },
-};
+  path: "/compare",
+});
 
 type CompareSearchParams = Record<string, string | string[] | undefined>;
 

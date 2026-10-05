@@ -3,14 +3,15 @@
 import { ContentPage } from "@/components/content-page";
 import { BudgetCalculator } from "@/features/budget/budget-calculator";
 import { loadBudgetModels } from "@/features/budget/load-budget-models";
+import { createCanonicalMetadata } from "@/features/seo/metadata";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createCanonicalMetadata({
   title: "AI API budget calculator",
   description: "Estimate how many AI API tokens or requests fit inside a monthly budget using source-backed provider pricing.",
-  alternates: { canonical: "/budget" },
-};
+  path: "/budget",
+});
 
 export default async function BudgetPage() {
   const models = await loadBudgetModels();

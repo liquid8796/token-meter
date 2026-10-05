@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 
 import { ContentPage } from "@/components/content-page";
+import { createCanonicalMetadata } from "@/features/seo/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createCanonicalMetadata({
   title: "Methodology",
   description: "How TokenMeter sources rates and turns token workloads into comparable AI API estimates.",
-};
+  path: "/about",
+});
 
 const principles = [
   ["01", "Official sources first", "Rates are curated from provider-owned pricing or model documentation and retain a source URL plus verification date."],

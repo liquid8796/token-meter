@@ -12,6 +12,7 @@ describe("model detail route", () => {
     expect(screen.getByRole("link", { name: /OpenAI provider/i })).toHaveAttribute("href", "/providers/openai");
     expect(screen.getAllByText(/verified oct 5, 2026/i).length).toBeGreaterThan(0);
     expect(screen.getByLabelText(/monthly input tokens/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /all pricing changes/i })).toHaveAttribute("href", "/changes");
     const sourceLinks = screen.getAllByRole("link", { name: /official pricing/i });
     expect(sourceLinks.some((link) => link.getAttribute("href")?.includes("openai"))).toBe(true);
   });

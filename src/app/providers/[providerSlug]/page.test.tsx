@@ -17,6 +17,7 @@ describe("provider detail route", () => {
       expect.stringContaining("models=gemini-3.1-pro-preview"),
     );
     expect(screen.getByText(/^preview$/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /all pricing changes/i })).toHaveAttribute("href", "/changes");
   });
 
   it("builds factual provider metadata", async () => {

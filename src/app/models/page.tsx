@@ -4,13 +4,15 @@ import Link from "next/link";
 import { ContentPage } from "@/components/content-page";
 import { formatUsd } from "@/domain/pricing/format";
 import { loadCalculatorModels } from "@/features/calculator/load-calculator-models";
+import { createCanonicalMetadata } from "@/features/seo/metadata";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createCanonicalMetadata({
   title: "AI model pricing catalogue",
   description: "Browse source-backed AI model token prices, context limits, and verification dates.",
-};
+  path: "/models",
+});
 
 function formatTokens(value: string | null) {
   if (!value) return "Not published";

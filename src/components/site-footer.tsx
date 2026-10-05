@@ -13,7 +13,8 @@ export function SiteFooter() {
       <nav aria-label="Footer navigation">
         <Link href="/models">Models</Link>
         <Link href="/compare">Compare</Link>
-<Link href="/budget">Budget</Link>
+        <Link href="/budget">Budget</Link>
+        <Link href="/changes">Changes</Link>
         <Link href="/about">Methodology</Link>
         <Link href="/privacy">Privacy</Link>
       </nav>

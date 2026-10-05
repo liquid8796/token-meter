@@ -12,6 +12,6 @@ describe("budget route", () => {
   });
 
   it("keeps a stable canonical route", () => {
-    expect(metadata.alternates).toMatchObject({ canonical: "/budget" });
+    expect(new URL(String(metadata.alternates?.canonical)).pathname).toBe("/budget");
   });
 });

@@ -63,7 +63,10 @@ export function ProviderDetailView({ detail }: { detail: ProviderDetail }) {
       </section>
 
       <section className="history-sheet" aria-label="Recent provider pricing changes">
-        <div className="section-rule"><span>Recent verified changes</span><span>Numeric rates only</span></div>
+        <div className="section-rule history-rule">
+          <span>Recent verified changes</span>
+          <Link href="/changes">All pricing changes</Link>
+        </div>
         {detail.historyStatus === "unavailable" ? (
           <p className="instrument-empty">Pricing history is temporarily unavailable; current rates above remain source-backed.</p>
         ) : detail.recentChanges.length === 0 ? (

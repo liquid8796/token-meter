@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { AdSlot } from "@/components/ad-slot";
@@ -5,8 +6,15 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { Calculator } from "@/features/calculator/calculator";
 import { loadCalculatorModels } from "@/features/calculator/load-calculator-models";
+import { createCanonicalMetadata } from "@/features/seo/metadata";
 
 export const revalidate = 3600;
+
+export const metadata: Metadata = createCanonicalMetadata({
+  title: "AI API cost calculator",
+  description: "Compare source-backed AI model pricing against the workload you actually plan to run.",
+  path: "/",
+});
 
 export default async function HomePage() {
   const models = await loadCalculatorModels();

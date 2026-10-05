@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { loadCalculatorModels } from "@/features/calculator/load-calculator-models";
 import { loadModelDetail } from "@/features/models/load-model-detail";
 import { ModelDetailView } from "@/features/models/model-detail";
+import { createCanonicalMetadata } from "@/features/seo/metadata";
 import { createPricingRepository } from "@/infrastructure/repositories/create-pricing-repository";
 
 export const revalidate = 3600;
@@ -22,10 +23,11 @@ export async function generateMetadata({ params }: ModelPageProps): Promise<Meta
   const detail = await loadModelDetail(modelSlug);
   if (!detail) return { title: "Model not found" };
 
-  return {
+  return createCanonicalMetadata({
     title: `${detail.model.name} API pricing`,
     description: `${detail.model.name} pricing from ${detail.provider.name}, with source-backed token rates, context limits, and verification date.`,
-  };
+    path: `/models/${detail.model.slug}`,
+  });
 }
 
 export default async function ModelPage({ params }: ModelPageProps) {

@@ -11,7 +11,8 @@ export function SiteHeader() {
         <Link href="/#calculator">Calculator</Link>
         <Link href="/models">Models</Link>
         <Link href="/compare">Compare</Link>
-<Link href="/budget">Budget</Link>
+        <Link href="/budget">Budget</Link>
+        <Link href="/changes">Changes</Link>
       </nav>
       <Link className="header-source" href="/about">
         Methodology <span aria-hidden="true">â†—</span>

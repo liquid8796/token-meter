@@ -99,7 +99,10 @@ export function ModelDetailView({
       </section>
 
       <section className="history-sheet" aria-labelledby="history-title">
-        <div className="section-rule"><span id="history-title">Pricing history</span><span>Source-backed revisions only</span></div>
+        <div className="section-rule history-rule">
+          <span id="history-title">Pricing history</span>
+          <Link href="/changes">All pricing changes</Link>
+        </div>
         {history.status === "unavailable" ? (
           <p className="instrument-empty">History temporarily unavailable. Current pricing remains available from the trusted snapshot.</p>
         ) : history.changes.length === 0 ? (

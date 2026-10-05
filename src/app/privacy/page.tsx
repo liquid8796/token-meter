@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 
 import { ContentPage } from "@/components/content-page";
+import { createCanonicalMetadata } from "@/features/seo/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createCanonicalMetadata({
   title: "Privacy",
   description: "TokenMeter privacy information for calculator inputs and site operations.",
-};
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (
