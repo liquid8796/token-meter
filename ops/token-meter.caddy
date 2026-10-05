@@ -1,4 +1,4 @@
-token-meter.158.180.59.36.sslip.io {
+tokenmeter.site, www.tokenmeter.site, token-meter.158.180.59.36.sslip.io {
     encode zstd gzip
 
     header {

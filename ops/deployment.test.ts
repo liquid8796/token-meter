@@ -33,10 +33,11 @@ describe("native OCI deployment assets", () => {
     expect(unit).toContain("ProtectSystem=strict");
   });
 
-  it("routes the production hostname through Caddy to localhost:3002", () => {
+  it("routes the production domain through Caddy to localhost:3002", () => {
     const caddy = read("ops/token-meter.caddy");
 
-    expect(caddy).toContain("token-meter.158.180.59.36.sslip.io");
+    expect(caddy).toContain("tokenmeter.site");
+    expect(caddy).toContain("www.tokenmeter.site");
     expect(caddy).toContain("reverse_proxy 127.0.0.1:3002");
   });
 
@@ -52,6 +53,7 @@ describe("native OCI deployment assets", () => {
   it("orchestrates SSH deployment and always unwinds its local repo location", () => {
     const deploy = read("ops/deploy.ps1");
 
+    expect(deploy).toContain('"tokenmeter.site"');
     expect(deploy).toContain("scp -i $SshKey");
     expect(deploy).toContain("ssh -i $SshKey");
     expect(deploy).toContain("$pushed = $true");
@@ -60,6 +62,8 @@ describe("native OCI deployment assets", () => {
   it("installs migration tooling in production and fails fast when a release step fails", () => {
     const release = read("ops/release.sh");
 
+    expect(release).toContain("SITE_URL=https://tokenmeter.site");
+    expect(release).toContain('sed -i "s|^NEXT_PUBLIC_SITE_URL=.*$|NEXT_PUBLIC_SITE_URL=$SITE_URL|" "$ENV_FILE"');
     expect(release).toContain("npm ci --include=dev --no-audit --no-fund");
     expect(release).toContain("bash -c \"set -euo pipefail;");
   });

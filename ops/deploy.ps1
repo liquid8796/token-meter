@@ -1,7 +1,7 @@
 param(
   [string]$Vm = $(if ($env:TOKEN_METER_VM) { $env:TOKEN_METER_VM } else { "ubuntu@158.180.59.36" }),
   [string]$SshKey = $(if ($env:TOKEN_METER_SSH_KEY) { $env:TOKEN_METER_SSH_KEY } else { Join-Path $HOME ".ssh\jarvis_oci_ed25519" }),
-  [string]$HostName = $(if ($env:TOKEN_METER_HOST) { $env:TOKEN_METER_HOST } else { "token-meter.158.180.59.36.sslip.io" })
+  [string]$HostName = $(if ($env:TOKEN_METER_HOST) { $env:TOKEN_METER_HOST } else { "tokenmeter.site" })
 )
 
 $ErrorActionPreference = "Stop"

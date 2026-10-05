@@ -9,7 +9,7 @@ ENV_FILE="$SHARED/.env"
 SERVICE=token-meter.service
 CADDY_FILE=/etc/caddy/conf.d/token-meter.caddy
 HEALTH_URL=http://127.0.0.1:3002/api/health
-SITE_URL=https://token-meter.158.180.59.36.sslip.io
+SITE_URL=https://tokenmeter.site
 
 release_id="${1:-}"
 archive="${2:-}"
@@ -78,6 +78,14 @@ else
     sudo -u postgres createdb -O token_meter token_meter
   fi
 fi
+
+if grep -q '^NEXT_PUBLIC_SITE_URL=' "$ENV_FILE"; then
+  sed -i "s|^NEXT_PUBLIC_SITE_URL=.*$|NEXT_PUBLIC_SITE_URL=$SITE_URL|" "$ENV_FILE"
+else
+  printf 'NEXT_PUBLIC_SITE_URL=%s\n' "$SITE_URL" >> "$ENV_FILE"
+fi
+chown token-meter:token-meter "$ENV_FILE"
+chmod 0600 "$ENV_FILE"
 
 rm -rf "$release_dir"
 mkdir -p "$release_dir"

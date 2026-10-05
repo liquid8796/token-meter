@@ -34,7 +34,7 @@ Defaults:
 
 - VM: `ubuntu@158.180.59.36`
 - SSH key: `~/.ssh/jarvis_oci_ed25519`
-- Host: `https://token-meter.158.180.59.36.sslip.io`
+- Host: `https://tokenmeter.site`
 - App bind: `127.0.0.1:3002`
 - Releases: `/opt/token-meter/releases/<release-id>` with `/opt/token-meter/current` symlink
 - Secrets: `/opt/token-meter/shared/.env` (mode `0600`, never committed)
