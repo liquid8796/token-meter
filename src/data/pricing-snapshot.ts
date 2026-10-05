@@ -1,0 +1,363 @@
+import type {
+  AiModel,
+  ModelPricing,
+  PricingBand,
+  PricingSnapshot,
+  Provider,
+} from "@/domain/pricing/types";
+
+const VERIFIED_AT = "2026-10-05T00:00:00.000Z";
+const KNOWN_VALID_FROM = VERIFIED_AT;
+
+const openAiPricingUrl = "https://developers.openai.com/api/docs/pricing";
+const anthropicPricingUrl = "https://platform.claude.com/docs/en/about-claude/pricing";
+const googlePricingUrl = "https://ai.google.dev/gemini-api/docs/pricing";
+
+const providers: Provider[] = [
+  {
+    id: "provider-anthropic",
+    slug: "anthropic",
+    name: "Anthropic",
+    websiteUrl: "https://www.anthropic.com",
+    pricingUrl: anthropicPricingUrl,
+    isActive: true,
+  },
+  {
+    id: "provider-google",
+    slug: "google",
+    name: "Google",
+    websiteUrl: "https://ai.google.dev",
+    pricingUrl: googlePricingUrl,
+    isActive: true,
+  },
+  {
+    id: "provider-openai",
+    slug: "openai",
+    name: "OpenAI",
+    websiteUrl: "https://openai.com",
+    pricingUrl: openAiPricingUrl,
+    isActive: true,
+  },
+];
+
+const models: AiModel[] = [
+  {
+    id: "model-gpt-6-astra",
+    providerId: "provider-openai",
+    slug: "gpt-6-astra",
+    apiModelId: "gpt-6-astra",
+    name: "GPT-6 Astra",
+    family: "GPT-6",
+    description: "OpenAI's highest-capability GPT-6 model for demanding professional workloads.",
+    contextWindowTokens: 1_050_000n,
+    maxOutputTokens: 128_000n,
+    modalities: ["text", "image-input"],
+    status: "active",
+    releasedAt: null,
+  },
+  {
+    id: "model-gpt-6-1-sol",
+    providerId: "provider-openai",
+    slug: "gpt-6.1-sol",
+    apiModelId: "gpt-6.1-sol",
+    name: "GPT-6.1 Sol",
+    family: "GPT-6",
+    description: "OpenAI's near-Astra model for complex coding and professional work at lower cost.",
+    contextWindowTokens: 1_050_000n,
+    maxOutputTokens: 128_000n,
+    modalities: ["text", "image-input"],
+    status: "active",
+    releasedAt: "2026-09-29",
+  },
+  {
+    id: "model-gpt-6-luna",
+    providerId: "provider-openai",
+    slug: "gpt-6-luna",
+    apiModelId: "gpt-6-luna",
+    name: "GPT-6 Luna",
+    family: "GPT-6",
+    description: "OpenAI's efficient GPT-6 model for focused, high-volume tasks.",
+    contextWindowTokens: 1_050_000n,
+    maxOutputTokens: 128_000n,
+    modalities: ["text", "image-input"],
+    status: "active",
+    releasedAt: null,
+  },
+  {
+    id: "model-claude-fable-5-1",
+    providerId: "provider-anthropic",
+    slug: "claude-fable-5-1",
+    apiModelId: "claude-fable-5-1",
+    name: "Claude Fable 5.1",
+    family: "Claude 5",
+    description: "Anthropic's model for demanding reasoning and long-horizon agentic work.",
+    contextWindowTokens: 1_000_000n,
+    maxOutputTokens: 128_000n,
+    modalities: ["text", "image-input"],
+    status: "active",
+    releasedAt: null,
+  },
+  {
+    id: "model-claude-opus-5-5",
+    providerId: "provider-anthropic",
+    slug: "claude-opus-5-5",
+    apiModelId: "claude-opus-5-5",
+    name: "Claude Opus 5.5",
+    family: "Claude 5",
+    description: "Anthropic's current Opus model for long-running agentic coding and knowledge work.",
+    contextWindowTokens: 1_000_000n,
+    maxOutputTokens: 128_000n,
+    modalities: ["text", "image-input"],
+    status: "active",
+    releasedAt: "2026-09-22",
+  },
+  {
+    id: "model-claude-sonnet-5-5",
+    providerId: "provider-anthropic",
+    slug: "claude-sonnet-5-5",
+    apiModelId: "claude-sonnet-5-5",
+    name: "Claude Sonnet 5.5",
+    family: "Claude 5",
+    description: "Anthropic's current Sonnet model balancing speed and intelligence.",
+    contextWindowTokens: 1_000_000n,
+    maxOutputTokens: 128_000n,
+    modalities: ["text", "image-input"],
+    status: "active",
+    releasedAt: "2026-09-28",
+  },
+  {
+    id: "model-gemini-3-8-flash",
+    providerId: "provider-google",
+    slug: "gemini-3.8-flash",
+    apiModelId: "gemini-3.8-flash",
+    name: "Gemini 3.8 Flash",
+    family: "Gemini 3",
+    description: "Google's production Flash model for agentic and complex enterprise workflows.",
+    contextWindowTokens: 1_000_000n,
+    maxOutputTokens: 64_000n,
+    modalities: ["text", "image-input", "audio-input", "video-input"],
+    status: "active",
+    releasedAt: null,
+  },
+  {
+    id: "model-gemini-3-1-pro-preview",
+    providerId: "provider-google",
+    slug: "gemini-3.1-pro-preview",
+    apiModelId: "gemini-3.1-pro-preview",
+    name: "Gemini 3.1 Pro",
+    family: "Gemini 3",
+    description: "Google's preview Pro model for advanced multimodal reasoning and complex tasks.",
+    contextWindowTokens: 1_000_000n,
+    maxOutputTokens: 64_000n,
+    modalities: ["text", "image-input", "audio-input", "video-input"],
+    status: "preview",
+    releasedAt: "2026-02-19",
+  },
+];
+
+function band(
+  minInputTokensPerRequest: bigint,
+  maxInputTokensPerRequest: bigint | null,
+  rates: Pick<
+    PricingBand,
+    "inputPerUnit" | "outputPerUnit" | "cachedInputPerUnit" | "cacheWritePerUnit"
+  >,
+): PricingBand {
+  return {
+    unitTokens: 1_000_000n,
+    minInputTokensPerRequest,
+    maxInputTokensPerRequest,
+    ...rates,
+  };
+}
+
+const pricing: ModelPricing[] = [
+  {
+    id: "price-gpt-6-astra-2026-10-05",
+    modelId: "model-gpt-6-astra",
+    currency: "USD",
+    bands: [
+      band(0n, 272_000n, {
+        inputPerUnit: "10",
+        cachedInputPerUnit: "1",
+        cacheWritePerUnit: "12.5",
+        outputPerUnit: "50",
+      }),
+      band(272_001n, null, {
+        inputPerUnit: "20",
+        cachedInputPerUnit: "2",
+        cacheWritePerUnit: "25",
+        outputPerUnit: "75",
+      }),
+    ],
+    effectiveFrom: KNOWN_VALID_FROM,
+    effectiveTo: null,
+    sourceUrl: openAiPricingUrl,
+    verifiedAt: VERIFIED_AT,
+    notes: "Standard global processing; regional, Batch/Flex/Fast modifiers are excluded.",
+  },
+  {
+    id: "price-gpt-6-1-sol-2026-10-05",
+    modelId: "model-gpt-6-1-sol",
+    currency: "USD",
+    bands: [
+      band(0n, 272_000n, {
+        inputPerUnit: "2",
+        cachedInputPerUnit: "0.1",
+        cacheWritePerUnit: "2.5",
+        outputPerUnit: "10",
+      }),
+      band(272_001n, null, {
+        inputPerUnit: "4",
+        cachedInputPerUnit: "0.2",
+        cacheWritePerUnit: "5",
+        outputPerUnit: "15",
+      }),
+    ],
+    effectiveFrom: KNOWN_VALID_FROM,
+    effectiveTo: null,
+    sourceUrl: openAiPricingUrl,
+    verifiedAt: VERIFIED_AT,
+    notes: "Standard global processing; regional, Batch/Flex/Fast modifiers are excluded.",
+  },
+  {
+    id: "price-gpt-6-luna-2026-10-05",
+    modelId: "model-gpt-6-luna",
+    currency: "USD",
+    bands: [
+      band(0n, 272_000n, {
+        inputPerUnit: "0.1",
+        cachedInputPerUnit: "0.01",
+        cacheWritePerUnit: "0.125",
+        outputPerUnit: "0.5",
+      }),
+      band(272_001n, null, {
+        inputPerUnit: "0.2",
+        cachedInputPerUnit: "0.02",
+        cacheWritePerUnit: "0.25",
+        outputPerUnit: "0.75",
+      }),
+    ],
+    effectiveFrom: KNOWN_VALID_FROM,
+    effectiveTo: null,
+    sourceUrl: openAiPricingUrl,
+    verifiedAt: VERIFIED_AT,
+    notes: "Standard global processing; regional, Batch/Flex/Fast modifiers are excluded.",
+  },
+  {
+    id: "price-claude-fable-5-1-2026-10-05",
+    modelId: "model-claude-fable-5-1",
+    currency: "USD",
+    bands: [
+      band(0n, null, {
+        inputPerUnit: "10",
+        cachedInputPerUnit: "0.25",
+        cacheWritePerUnit: "12.5",
+        outputPerUnit: "50",
+      }),
+    ],
+    effectiveFrom: KNOWN_VALID_FROM,
+    effectiveTo: null,
+    sourceUrl: anthropicPricingUrl,
+    verifiedAt: VERIFIED_AT,
+    notes: "Global standard routing. Cache write rate represents the 5-minute duration; 1-hour writes cost more.",
+  },
+  {
+    id: "price-claude-opus-5-5-2026-10-05",
+    modelId: "model-claude-opus-5-5",
+    currency: "USD",
+    bands: [
+      band(0n, null, {
+        inputPerUnit: "4",
+        cachedInputPerUnit: "0.2",
+        cacheWritePerUnit: "5",
+        outputPerUnit: "20",
+      }),
+    ],
+    effectiveFrom: KNOWN_VALID_FROM,
+    effectiveTo: null,
+    sourceUrl: anthropicPricingUrl,
+    verifiedAt: VERIFIED_AT,
+    notes: "Global standard routing. Cache write rate represents the 5-minute duration; 1-hour writes cost more.",
+  },
+  {
+    id: "price-claude-sonnet-5-5-2026-10-05",
+    modelId: "model-claude-sonnet-5-5",
+    currency: "USD",
+    bands: [
+      band(0n, null, {
+        inputPerUnit: "2",
+        cachedInputPerUnit: "0.2",
+        cacheWritePerUnit: "2.5",
+        outputPerUnit: "10",
+      }),
+    ],
+    effectiveFrom: KNOWN_VALID_FROM,
+    effectiveTo: null,
+    sourceUrl: anthropicPricingUrl,
+    verifiedAt: VERIFIED_AT,
+    notes: "Global standard routing. Cache write rate represents the 5-minute duration; 1-hour writes cost more.",
+  },
+  {
+    id: "price-gemini-3-8-flash-intro-2026",
+    modelId: "model-gemini-3-8-flash",
+    currency: "USD",
+    bands: [
+      band(0n, null, {
+        inputPerUnit: "0.75",
+        cachedInputPerUnit: "0.075",
+        outputPerUnit: "3.75",
+      }),
+    ],
+    effectiveFrom: KNOWN_VALID_FROM,
+    effectiveTo: "2026-12-31T23:59:59.999Z",
+    sourceUrl: googlePricingUrl,
+    verifiedAt: VERIFIED_AT,
+    notes: "Standard paid tier. Context-cache storage fees are excluded from the token estimate.",
+  },
+  {
+    id: "price-gemini-3-8-flash-2027",
+    modelId: "model-gemini-3-8-flash",
+    currency: "USD",
+    bands: [
+      band(0n, null, {
+        inputPerUnit: "1.5",
+        cachedInputPerUnit: "0.15",
+        outputPerUnit: "7.5",
+      }),
+    ],
+    effectiveFrom: "2027-01-01T00:00:00.000Z",
+    effectiveTo: null,
+    sourceUrl: googlePricingUrl,
+    verifiedAt: VERIFIED_AT,
+    notes: "Google-announced Standard pricing effective January 1, 2027; context-cache storage fees excluded.",
+  },
+  {
+    id: "price-gemini-3-1-pro-preview-2026-10-05",
+    modelId: "model-gemini-3-1-pro-preview",
+    currency: "USD",
+    bands: [
+      band(0n, 200_000n, {
+        inputPerUnit: "2",
+        cachedInputPerUnit: "0.2",
+        outputPerUnit: "12",
+      }),
+      band(200_001n, null, {
+        inputPerUnit: "4",
+        cachedInputPerUnit: "0.4",
+        outputPerUnit: "18",
+      }),
+    ],
+    effectiveFrom: KNOWN_VALID_FROM,
+    effectiveTo: null,
+    sourceUrl: googlePricingUrl,
+    verifiedAt: VERIFIED_AT,
+    notes: "Preview Standard paid tier. Context-cache storage fees are excluded from the token estimate.",
+  },
+];
+
+export const PRICING_SNAPSHOT: PricingSnapshot = {
+  providers,
+  models,
+  pricing,
+};

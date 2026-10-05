@@ -29,3 +29,47 @@ export interface CostBreakdown {
   cachedInputCost: MoneyValue | null;
   totalCost: MoneyValue;
 }
+
+export type ModelStatus = "active" | "legacy" | "preview" | "deprecated";
+
+export interface Provider {
+  id: string;
+  slug: string;
+  name: string;
+  websiteUrl: string;
+  pricingUrl: string;
+  isActive: boolean;
+}
+
+export interface AiModel {
+  id: string;
+  providerId: string;
+  slug: string;
+  apiModelId: string;
+  name: string;
+  family: string | null;
+  description: string;
+  contextWindowTokens: bigint | null;
+  maxOutputTokens: bigint | null;
+  modalities: string[];
+  status: ModelStatus;
+  releasedAt: string | null;
+}
+
+export interface ModelPricing {
+  id: string;
+  modelId: string;
+  currency: "USD";
+  bands: PricingBand[];
+  effectiveFrom: string;
+  effectiveTo: string | null;
+  sourceUrl: string;
+  verifiedAt: string;
+  notes: string | null;
+}
+
+export interface PricingSnapshot {
+  providers: Provider[];
+  models: AiModel[];
+  pricing: ModelPricing[];
+}
