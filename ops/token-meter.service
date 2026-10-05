@@ -1,0 +1,31 @@
+[Unit]
+Description=TokenMeter AI API pricing calculator
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=token-meter
+Group=token-meter
+WorkingDirectory=/opt/token-meter/current
+EnvironmentFile=/opt/token-meter/shared/.env
+ExecStart=/usr/bin/npm start -- --hostname 127.0.0.1 --port 3002
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+KillSignal=SIGINT
+UMask=0077
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+ReadWritePaths=/opt/token-meter/current/.next
+
+[Install]
+WantedBy=multi-user.target
