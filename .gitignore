@@ -28,3 +28,6 @@ Thumbs.db
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# isolated implementation worktrees
+.worktrees/
