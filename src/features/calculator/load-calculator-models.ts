@@ -7,7 +7,7 @@ export async function loadCalculatorModels(asOf = new Date()): Promise<Calculato
     repository.listProviders(),
     repository.listModels(),
   ]);
-  const providerNames = new Map(providers.map((provider) => [provider.id, provider.name]));
+  const providerById = new Map(providers.map((provider) => [provider.id, provider]));
   const pricedModels = await Promise.all(
     models.map(async (model) => ({
       model,
@@ -22,7 +22,8 @@ export async function loadCalculatorModels(asOf = new Date()): Promise<Calculato
       {
         slug: model.slug,
         name: model.name,
-        provider: providerNames.get(model.providerId) ?? "Unknown provider",
+        provider: providerById.get(model.providerId)?.name ?? "Unknown provider",
+        providerSlug: providerById.get(model.providerId)?.slug,
         status: model.status,
         contextWindowTokens: model.contextWindowTokens?.toString() ?? null,
         sourceUrl: pricing.sourceUrl,

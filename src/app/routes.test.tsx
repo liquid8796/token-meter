@@ -11,6 +11,11 @@ describe("public navigation routes", () => {
     render(await ModelsPage());
     expect(screen.getByRole("heading", { level: 1, name: /model pricing catalogue/i })).toBeInTheDocument();
     expect(screen.getAllByRole("article").length).toBeGreaterThanOrEqual(7);
+    expect(screen.getByRole("link", { name: "GPT-6.1 Sol" })).toHaveAttribute(
+      "href",
+      "/models/gpt-6.1-sol",
+    );
+    expect(screen.getAllByRole("link", { name: /OpenAI provider pricing/i }).length).toBeGreaterThan(0);
   });
 
   it("renders the full comparison instrument", async () => {

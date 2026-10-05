@@ -25,6 +25,7 @@ export interface CalculatorModel {
   slug: string;
   name: string;
   provider: string;
+  providerSlug?: string;
   status: ModelStatus;
   contextWindowTokens: string | null;
   sourceUrl: string;

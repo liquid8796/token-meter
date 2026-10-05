@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { ContentPage } from "@/components/content-page";
 import { formatUsd } from "@/domain/pricing/format";
@@ -39,8 +40,14 @@ export default async function ModelsPage() {
             return (
               <article className="catalogue-row" key={model.slug}>
                 <div className="catalogue-identity">
-                  <span>{model.provider}</span>
-                  <h2>{model.name}</h2>
+                  {model.providerSlug ? (
+                    <Link href={`/providers/${model.providerSlug}`} aria-label={`${model.provider} provider pricing`} className="catalogue-provider-link">
+                      {model.provider}
+                    </Link>
+                  ) : (
+                    <span>{model.provider}</span>
+                  )}
+                  <h2><Link href={`/models/${model.slug}`}>{model.name}</Link></h2>
                   <code>{model.slug}</code>
                 </div>
                 <dl className="catalogue-metrics">
