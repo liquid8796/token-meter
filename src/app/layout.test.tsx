@@ -9,6 +9,11 @@ describe("root SEO metadata", () => {
     expect(new URL(String(metadata.metadataBase)).origin).toBe(getSiteOrigin());
   });
 
+  it("publishes the TokenMeter browser tab icon", () => {
+    expect(metadata.icons).toEqual({
+      icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    });
+  });
   it("publishes truthful WebSite structured data", () => {
     const markup = renderToStaticMarkup(RootLayout({ children: <main>content</main> }));
 

@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   },
   description:
     "Compare source-backed AI model pricing against the workload you actually plan to run.",
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
