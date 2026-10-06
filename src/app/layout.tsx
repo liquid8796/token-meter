@@ -102,7 +102,13 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     <html lang="en">
       <head>
         <meta name="theme-color" content="#071316" />
+        <meta name="google-adsense-account" content="ca-pub-7851683096379872" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7851683096379872"
+          crossOrigin="anonymous"
+        />
         <script
           async
           src="https://www.googletagmanager.com/gtag/js?id=G-ZGNEZPD1Z8"
