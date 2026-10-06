@@ -11,5 +11,7 @@ export default defineConfig([
     "out/**",
     "coverage/**",
     "playwright-report/**",
+    "deploy/**",
+    "scripts/**",
   ]),
 ]);

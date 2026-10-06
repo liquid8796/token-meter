@@ -14,7 +14,9 @@
     "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/infrastructure/db/migrate.ts",
-    "db:seed": "tsx src/infrastructure/db/seed.ts"
+    "db:seed": "tsx src/infrastructure/db/seed.ts",
+    "ad-viewer": "node scripts/adViewer.mjs",
+    "ad-viewer:head": "node scripts/adViewer.mjs --head"
   },
   "repository": {
     "type": "git",

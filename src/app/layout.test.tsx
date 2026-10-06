@@ -1,4 +1,4 @@
-﻿import { renderToStaticMarkup } from "react-dom/server";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import { getSiteOrigin } from "@/features/seo/metadata";
@@ -23,7 +23,7 @@ describe("root SEO metadata", () => {
     const initializerIndex = markup.indexOf("aclib.runAutoTag");
 
     expect(libraryIndex).toBeGreaterThanOrEqual(0);
-    expect(markup).toContain('zoneId: "h9m5cplbb0"');
+    expect(markup).toContain('zoneId: "0gv86rgorm"');
     expect(initializerIndex).toBeGreaterThan(libraryIndex);
   });
 
