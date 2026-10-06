@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ContentPage } from "@/components/content-page";
 import { formatUsd } from "@/domain/pricing/format";
 import { loadCalculatorModels } from "@/features/calculator/load-calculator-models";
-import { createCanonicalMetadata } from "@/features/seo/metadata";
+import { createCanonicalMetadata, siteUrl } from "@/features/seo/metadata";
 
 export const revalidate = 3600;
 
@@ -12,6 +12,14 @@ export const metadata: Metadata = createCanonicalMetadata({
   title: "AI model pricing catalogue",
   description: "Browse source-backed AI model token prices, context limits, and verification dates.",
   path: "/models",
+  keywords: [
+    "AI model pricing catalogue",
+    "LLM API price list",
+    "OpenAI models price",
+    "Claude Opus Sonnet price",
+    "Gemini token rates",
+    "AI context window limits",
+  ],
 });
 
 function formatTokens(value: string | null) {
@@ -25,8 +33,34 @@ function formatTokens(value: string | null) {
 export default async function ModelsPage() {
   const models = await loadCalculatorModels();
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: siteUrl("/"),
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Models",
+        item: siteUrl("/models"),
+      },
+    ],
+  };
+
   return (
-    <ContentPage
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
+      <ContentPage
       eyebrow="Current model index"
       title="Model pricing catalogue"
       description="A compact reference for the rates TokenMeter currently uses. Every row keeps the official pricing source and verification date attached."
@@ -69,5 +103,6 @@ export default async function ModelsPage() {
         </div>
       </section>
     </ContentPage>
+    </>
   );
 }

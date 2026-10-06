@@ -1,0 +1,62 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#060d16"/>
+      <stop offset="50%" stop-color="#0a1524"/>
+      <stop offset="100%" stop-color="#08101a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#55d8cf"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.06)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.02)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Brand Mark Icon -->
+  <g transform="translate(100, 90)">
+    <rect width="84" height="84" rx="20" fill="#0f202a" stroke="rgba(85,216,207,0.3)" stroke-width="2"/>
+    <circle cx="42" cy="42" r="28" fill="none" stroke="#55d8cf" stroke-width="4.5"/>
+    <rect x="25" y="38" width="6" height="10" rx="3" fill="#55d8cf"/>
+    <rect x="37" y="32" width="6" height="22" rx="3" fill="#55d8cf"/>
+    <rect x="49" y="24" width="6" height="38" rx="3" fill="#55d8cf"/>
+    <text x="105" y="56" font-family="system-ui, -apple-system, sans-serif" font-size="44" font-weight="800" fill="#ffffff" letter-spacing="-0.03em">TokenMeter</text>
+  </g>
+
+  <!-- Tagline badge -->
+  <g transform="translate(100, 220)">
+    <rect width="260" height="38" rx="19" fill="rgba(85,216,207,0.12)" stroke="rgba(85,216,207,0.3)" stroke-width="1.5"/>
+    <circle cx="22" cy="19" r="4" fill="#55d8cf"/>
+    <text x="36" y="24" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="600" fill="#55d8cf" letter-spacing="0.04em">SOURCE-BACKED API PRICING</text>
+  </g>
+
+  <!-- Main Headline -->
+  <text x="100" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="800" fill="#f1f5f9" letter-spacing="-0.03em">
+    Price your AI workload before
+  </text>
+  <text x="100" y="385" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="800" fill="url(#accent)" letter-spacing="-0.03em">
+    it reaches production.
+  </text>
+
+  <!-- Subheadline -->
+  <text x="100" y="445" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="400" fill="#94a3b8">
+    Real-time token cost calculator for OpenAI, Anthropic, and Google Gemini models.
+  </text>
+
+  <!-- Cards / Features Footer -->
+  <g transform="translate(100, 495)">
+    <rect x="0" y="0" width="280" height="60" rx="12" fill="url(#card)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="20" y="36" font-family="system-ui, -apple-system, sans-serif" font-size="17" font-weight="600" fill="#e2e8f0">⚡ Cache &amp; Batch Savings</text>
+
+    <rect x="305" y="0" width="280" height="60" rx="12" fill="url(#card)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="325" y="36" font-family="system-ui, -apple-system, sans-serif" font-size="17" font-weight="600" fill="#e2e8f0">📊 Long-Context Tiering</text>
+
+    <rect x="610" y="0" width="280" height="60" rx="12" fill="url(#card)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="630" y="36" font-family="system-ui, -apple-system, sans-serif" font-size="17" font-weight="600" fill="#e2e8f0">🔗 Verified Provider Rates</text>
+  </g>
+</svg>

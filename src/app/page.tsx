@@ -14,6 +14,16 @@ export const metadata: Metadata = createCanonicalMetadata({
   title: "AI API cost calculator",
   description: "Compare source-backed AI model pricing against the workload you actually plan to run.",
   path: "/",
+  keywords: [
+    "AI API cost calculator",
+    "LLM token price comparison",
+    "OpenAI API pricing",
+    "Anthropic Claude API pricing",
+    "Google Gemini API pricing",
+    "AI token cost estimator",
+    "prompt cache savings",
+    "batch API discounts",
+  ],
 });
 
 export default async function HomePage() {

@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
 
 import { ContentPage } from "@/components/content-page";
-import { createCanonicalMetadata } from "@/features/seo/metadata";
+import { createCanonicalMetadata, siteUrl } from "@/features/seo/metadata";
 
 export const metadata: Metadata = createCanonicalMetadata({
   title: "Methodology",
   description: "How TokenMeter sources rates and turns token workloads into comparable AI API estimates.",
   path: "/about",
+  keywords: [
+    "TokenMeter methodology",
+    "AI pricing accuracy",
+    "token cost calculation formula",
+    "LLM pricing benchmark",
+  ],
 });
 
 const principles = [
@@ -17,25 +23,48 @@ const principles = [
 ];
 
 export default function AboutPage() {
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: siteUrl("/"),
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Methodology",
+        item: siteUrl("/about"),
+      },
+    ],
+  };
+
   return (
-    <ContentPage
-      eyebrow="Methodology"
-      title="How TokenMeter estimates cost"
-      description="The calculator is deliberately simple: provider rates in, explicit workload assumptions in, decimal-safe arithmetic out. No hidden quality score or synthetic benchmark is mixed into the price."
-    >
-      <section className="prose-grid" aria-label="Calculation methodology">
-        {principles.map(([index, title, copy]) => (
-          <article key={index}>
-            <span className="section-index">{index}</span>
-            <h2>{title}</h2>
-            <p>{copy}</p>
-          </article>
-        ))}
-      </section>
-      <section className="assumption-block">
-        <h2>What the estimate does not include</h2>
-        <p>Taxes, negotiated enterprise discounts, regional pricing differences, non-token tool charges, storage, network egress, fine-tuning, asynchronous discounts not represented in the selected rate, or provider billing minimums. Treat the result as a planning estimate and confirm the linked official source before a purchasing decision.</p>
-      </section>
-    </ContentPage>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
+      <ContentPage
+        eyebrow="Methodology"
+        title="How TokenMeter estimates cost"
+        description="The calculator is deliberately simple: provider rates in, explicit workload assumptions in, decimal-safe arithmetic out. No hidden quality score or synthetic benchmark is mixed into the price."
+      >
+        <section className="prose-grid" aria-label="Calculation methodology">
+          {principles.map(([index, title, copy]) => (
+            <article key={index}>
+              <span className="section-index">{index}</span>
+              <h2>{title}</h2>
+              <p>{copy}</p>
+            </article>
+          ))}
+        </section>
+      </ContentPage>
+    </>
   );
 }

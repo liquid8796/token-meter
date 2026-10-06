@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 
 const DEFAULT_SITE_ORIGIN = "http://localhost:3000";
 
@@ -6,6 +6,8 @@ export interface CanonicalMetadataInput {
   title: string;
   description: string;
   path: string;
+  keywords?: string[];
+  image?: string;
 }
 
 export function getSiteOrigin(value = process.env.NEXT_PUBLIC_SITE_URL): string {
@@ -30,10 +32,38 @@ export function createCanonicalMetadata({
   title,
   description,
   path,
+  keywords,
+  image,
 }: CanonicalMetadataInput): Metadata {
+  const canonical = siteUrl(path);
+  const ogImageUrl = image || `${getSiteOrigin()}/og-image.png`;
+
   return {
     title,
     description,
-    alternates: { canonical: siteUrl(path) },
+    ...(keywords && keywords.length > 0 ? { keywords } : {}),
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      siteName: "TokenMeter",
+      locale: "en_US",
+      type: "website",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${title} — TokenMeter`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImageUrl],
+    },
   };
 }
