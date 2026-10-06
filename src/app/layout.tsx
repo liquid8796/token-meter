@@ -120,7 +120,7 @@ gtag('config', 'G-ZGNEZPD1Z8');`,
           type="text/javascript"
           dangerouslySetInnerHTML={{
             __html: `aclib.runAutoTag({
-  zoneId: "0gv86rgorm",
+  zoneId: "01qpchrhzg",
 });`,
           }}
         />

@@ -328,7 +328,7 @@ echo.
 
 REM 14. Nha mang quang cao muc tieu (Ad Network)
 echo [14] Nha mang quang cao muc tieu [Ad Network]:
-echo      1. Adcash [Mac dinh - AutoTag zone 0gv86rgorm]
+echo      1. Adcash [Mac dinh - AutoTag zone 01qpchrhzg]
 echo      2. Clickadu [Mang quang cao Clickadu]
 echo      3. Adsterra [Mang quang cao Adsterra]
 echo      4. Tat ca nha mang [All networks - Adcash + Clickadu + Adsterra]
@@ -345,7 +345,7 @@ if "%INPUT_AD_NETWORK%"=="2" (
     set "ARG_AD_NETWORK=--ad-network=all"
     echo     -^> Nha mang: Tat ca [Adcash + Clickadu + Adsterra]
 ) else (
-    echo     -^> Nha mang: Adcash [Mac dinh - AutoTag 0gv86rgorm]
+    echo     -^> Nha mang: Adcash [Mac dinh - AutoTag 01qpchrhzg]
 )
 echo.
 

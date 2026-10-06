@@ -3567,7 +3567,7 @@ async function runOneCycle(
     );
     const adNetworkDesc =
       AD_NETWORK === "adcash"
-        ? "🚀 Adcash (AutoTag 0gv86rgorm)"
+        ? "🚀 Adcash (AutoTag 01qpchrhzg)"
         : AD_NETWORK === "clickadu"
         ? "Clickadu"
         : AD_NETWORK === "adsterra"
